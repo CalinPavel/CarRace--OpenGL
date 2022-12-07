@@ -1,13 +1,13 @@
 #pragma once
 
 #include "components/simple_scene.h"
-
+#include "lab_m1/tema2/camera.h"
 
 namespace m1
 {
     class tema2 : public gfxc::SimpleScene
     {
-     public:
+    public:
         struct ViewportArea
         {
             ViewportArea() : x(0), y(0), width(1), height(1) {}
@@ -24,10 +24,12 @@ namespace m1
 
         void Init() override;
 
-     private:
+    private:
         void FrameStart() override;
         void Update(float deltaTimeSeconds) override;
         void FrameEnd() override;
+
+        void RenderMesh(Mesh *mesh, Shader *shader, const glm::mat4 &modelMatrix) override;
 
         void OnInputUpdate(float deltaTime, int mods) override;
         void OnKeyPress(int key, int mods) override;
@@ -39,12 +41,31 @@ namespace m1
         void OnWindowResize(int width, int height) override;
 
         void RenderScene();
-     protected:
-        glm::mat4 modelMatrix;
+
+
+		Mesh* CreateMesh(const char *name, const std::vector<VertexFormat>& vertices, const std::vector<unsigned int>& indices);
+
+
+    protected:
+        glm::mat4 modelMatrix , modelX;
         float translateX, translateY, translateZ;
+        float cameraX, cameraY, cameraZ;
+
         float scaleX, scaleY, scaleZ;
         float angularStepOX, angularStepOY, angularStepOZ;
         GLenum polygonMode;
         ViewportArea miniViewportArea;
+
+
+        glm::mat4 modelTree1,modelTree2,modelTree3,modelTree4,modelTree5,modelTree6,modelTree7,modelTree8,modelTree9,modelTree10,modelTree11,modelTree12;
+
+
+    protected:
+        implemented::Camera *camera;
+        glm::mat4 projectionMatrix;
+        bool renderCameraTarget;
+
+        float fov = 3.14f / 4;
+        float left = 0.1f, right = 5, bottom = 0.1f, top = 5, zNear = 0.1f, zFar = 300;
     };
 }
