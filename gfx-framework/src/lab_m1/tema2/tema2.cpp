@@ -23,6 +23,10 @@ tema2::~tema2()
 }
 
     vector<VertexFormat> to_draw_trees;
+    vector<VertexFormat> obstacle_1_road;
+    vector<VertexFormat> obstacle_2_road;
+
+
 
 void tema2::Init()
 {
@@ -37,12 +41,18 @@ void tema2::Init()
     cameraY = 1;
     cameraZ = 5;
     camera->Set(glm::vec3(cameraX, cameraY, cameraZ), glm::vec3(0, 1, 0), glm::vec3(0, 1, 0));
-    camera_up->Set(glm::vec3(camera->GetTargetPosition()[0]+1, camera->GetTargetPosition()[1]+130 ,camera->GetTargetPosition()[2] ), glm::vec3(camera->GetTargetPosition()), glm::vec3(0, 1, 0));
+    camera_up->Set(glm::vec3(cameraX, cameraY, cameraZ), glm::vec3(0, 1, 0), glm::vec3(0, 1, 0));
+
+//    cout <<camera->GetTargetPosition();
 
     camera->RotateThirdPerson_OX(-0.5f);
     camera->TranslateUpward(-0.6f);
+    camera->MoveForward(6.f);
+
     // camera->TranslateUpward(60);
     // camera->RotateThirdPerson_OX(-0.5f);
+    // camera->RotateThirdPerson_OX(1.57f);
+
     // camera->RotateThirdPerson_OY( -0.7853981634f);
 
     // camera->TranslateUpward(-0.6f);
@@ -58,7 +68,9 @@ void tema2::Init()
     // camera_up->RotateThirdPerson_OY( -0.7853981634f);
 
     // projectionMatrixUp = glm::ortho(left, right, bottom, top, zNear, zFar);
-    projectionMatrixUp = glm::ortho(left, right, bottom, top, zNear, zFar);
+    projectionMatrixUp = glm::perspective(fov, window->props.aspectRatio, zNear, zFar);
+
+    // projectionMatrixUp = glm::perspective(left, right, bottom, top, zNear, zFar);
     
 
 
@@ -245,6 +257,12 @@ void tema2::Init()
 
         to_draw.push_back(VertexFormat(R,RoadColor));
 
+        R[0] = main_dots[i].position[0] + 1.3f * P[0];
+        R[2] = main_dots[i].position[2] + 1.3f * P[2];
+        R[1]=0.04f;
+
+        obstacle_1_road.push_back(R);
+
         A[0] = main_dots[i].position[0] - 3.5f * P[0];
         A[2] = main_dots[i].position[2] - 3.5f * P[2];
         A[1]=0.04f;
@@ -255,6 +273,13 @@ void tema2::Init()
         A[2] = main_dots[i].position[2] - 5.6f * P[2];
         A[1]=0.02f;
         to_draw_trees.push_back(A);
+
+
+
+        A[0] = main_dots[i].position[0] - 2.1f * P[0];
+        A[2] = main_dots[i].position[2] - 2.1f * P[2];
+        A[1]=0.02f;
+        obstacle_2_road.push_back(A);
 
         //    A = main_dots[i] + P;
         // to_draw.push_back(direction);
@@ -458,21 +483,6 @@ void tema2::Update(float deltaTimeSeconds)
     RenderMesh(meshes["grass"], shaders["VertexColor"], modelX);
     RenderMesh(meshes["road"], shaders["VertexColor"], modelX);
 
-    //     for (int i = 0; i != to_draw.size() - 1; ++i)
-    // {
-    // //     cout << to_draw[i].position[0] << " ";
-    // //     cout << to_draw[i].position[2] << "\n";
-    //     // tree_matrix.push_back(glm::mat4(1));
-    //     tree_matrix[i] *= transform3D::Translate(to_draw_trees[i].position[0], 0, to_draw_trees[i].position[2]);
-    //     // RenderMesh(meshes["tree_mesh"], shaders["VertexColor"], modelTree);
-    // }
-
-    
-
-    // glm::mat4 modelTree = glm::mat4(1);
-    // modelTree *= transform3D::Translate(to_draw_trees[0].position[0], 0, to_draw_trees[0].position[2]);
-    // RenderMesh(meshes["tree_mesh"], shaders["VertexColor"], modelTree);
-
     float tree_offset=0;
 
     for (int i = 0; i != to_draw_trees.size() - 1; ++i){
@@ -482,35 +492,7 @@ void tema2::Update(float deltaTimeSeconds)
     }
 
 
-    // cameraX = modelX[]
-
-    // cout << modelMatrix[1][1] << "\n";
-    // cout << modelX[2][2] << "\n";
-
-    // cout << modelX[3][2] << "\n"; //
-    // cout << modelX[0][1] << "\n"; // Z
-    // for(int i=0;i<=3;i++){
-    //     for(int j=0;j<=3;j++){
-    //     cout <<modelMatrix[i][j] << " ";
-    //     }
-    //     cout << "\n";
-    //     // cout << "\n";
-
-    // }
-    // cout <<  "///////////////////////////";
-
-    // cout << modelX[1][0] << "\n";
-
-    // cameraZ = modelX[3][2] + 3;
-    // cameraX = modelX[3][0];
-    // cameraY = modelX[3][2]+3;
-
-    // cout << camera->GetViewMatrix();
-
-    // cout <<  "///////////////////////////";
-
-    // camera->Set(glm::vec3(cameraX, cameraY, cameraZ), glm::vec3(0, 1, 0), glm::vec3(0, 1, 0));
-
+    
     // Render the camera target. This is useful for understanding where
     // the rotation point is, when moving in third-person camera mode.
     glm::mat4 modelMatrix = glm::mat4(1);
@@ -520,25 +502,101 @@ void tema2::Update(float deltaTimeSeconds)
     // modelMatrix = glm::scale(modelMatrix, glm::vec3(0.1f));
     RenderMesh(meshes["box"], shaders["VertexNormal"], modelMatrix);
 
+    
+
+
+
+    //obstacle_1
+    glm::mat4 modelObstacle1 = glm::mat4(1);
+
+    // for (int i = 0; i != obstacle_1_road.size() - 1; ++i){
+    //     glm::mat4 modelObstacle1 = glm::mat4(1);
+    //     modelObstacle1 *= transform3D::Translate(obstacle_1_road[i].position[0], 0, obstacle_1_road[i].position[2]);
+    //     modelObstacle1 = glm::scale(modelObstacle1, glm::vec3(0.6f));
+    //     RenderMesh(meshes["box"], shaders["VertexColor"], modelObstacle1);
+    // }
+    
+
+    // if(i <= obstacle_1_road.size() - 1){
+    //     glm::mat4 modelObstacle1 = glm::mat4(1);
+    //     modelObstacle1 *= transform3D::Translate(obstacle_1_road[i].position[0], 0, obstacle_1_road[i].position[2]);
+    //     modelObstacle1 = glm::scale(modelObstacle1, glm::vec3(0.6f));
+    //     RenderMesh(meshes["box"], shaders["VertexColor"], modelObstacle1);
+    //     if(i == obstacle_1_road.size() - 1){
+    //         i=0;
+    //     }
+    // }
+
+    // cout<< i << "\n";
+    
+    // keeptime += deltaTimeSeconds;
+    // if(keeptime > 1 ){
+    //     keeptime=0;
+    if(i <= obstacle_1_road.size() - 1){
+
+        if(i==0)
+        {
+            modelObstacle1 *= transform3D::Translate(obstacle_1_road[i].position[0], 0,obstacle_1_road[i].position[2]);
+            // RenderMesh(meshes["box"], shaders["VertexColor"], modelObstacle1);
+            count_x = obstacle_1_road[i].position[0];
+            count_y = obstacle_1_road[i].position[2];
+            i++;
+            count_x= obstacle_1_road[i].position[0] -obstacle_1_road[i].position[0]/300 *299 ;
+            count_y= obstacle_1_road[i].position[2] -obstacle_1_road[i].position[2]/300 *299 ;
+        }
+
+        float to_add_x , to_add_y;
+        to_add_x = obstacle_1_road[i].position[0]/300;
+        to_add_y = obstacle_1_road[i].position[2]/300;
+
+        // cout << count_x << "\n";
+        //aici sa fac cazurile de obstacle negativ /pozitiv
+        if(count_x > obstacle_1_road[i].position[0] || count_y > obstacle_1_road[i].position[2] )
+        {
+            count_x=obstacle_1_road[i].position[0];
+            count_y=obstacle_1_road[i].position[2];
+            modelObstacle1 *= transform3D::Translate(count_x, 0, count_y);
+
+            i++;
+            count_x= obstacle_1_road[i].position[0] -obstacle_1_road[i].position[0]/300 *299 ;
+            count_y= obstacle_1_road[i].position[2] -obstacle_1_road[i].position[2]/300 *299 ;
+            cout<<"next value"<<"\n";
+        }
+        else
+        {
+            cout<<"Add to value" << " " << count_x << " " << "To reach" << obstacle_1_road[i].position[0] <<"\n";
+            if(obstacle_1_road[i].position[0] < 0){
+                count_x -=to_add_x;
+            }else{
+                count_x +=to_add_x;
+            }
+
+            if(obstacle_1_road[i].position[2] < 0){
+                count_y -=to_add_y;
+            }else{
+                count_y +=to_add_y;
+            }
+            modelObstacle1 *= transform3D::Translate(count_x, 0, count_y);
+            
+           
+        }
+    }else{
+        i=0;
+    }
+    // }
+
+            RenderMesh(meshes["box"], shaders["VertexColor"], modelObstacle1);
+
+    
+
+    // cout << deltaTimeSeconds << "\n";
+
+
     //Viewport
     glClear(GL_DEPTH_BUFFER_BIT);
     glViewport(miniViewportArea.x, miniViewportArea.y, miniViewportArea.width, miniViewportArea.height);
-    glm::mat4 modelGrassUp = glm::mat4(1);
-    RenderMeshUp(meshes["grass"], shaders["VertexColor"], modelGrassUp);
 
-    glm::mat4 modelRoadUp = glm::mat4(1);
-    modelRoadUp *= glm::translate(modelRoadUp, camera_up->GetTargetPosition());
-    // modelRoadUp *= transform3D::Translate(25,25,25);
-    RenderMeshUp(meshes["road"], shaders["VertexColor"], modelRoadUp);
 
-    for (int i = 0; i != to_draw_trees.size() - 1; ++i){
-        glm::mat4 modelTree = glm::mat4(1);
-        modelTree *= transform3D::Translate(to_draw_trees[i].position[0], 0, to_draw_trees[i].position[2]+tree_offset);
-        RenderMeshUp(meshes["tree_mesh"], shaders["VertexColor"], modelTree);
-    }
-    glm::mat4 modelCubeUp = glm::mat4(1);
-    modelCubeUp *= glm::translate(modelCubeUp, camera_up->GetTargetPosition());
-    RenderMeshUp(meshes["box"], shaders["VertexNormal"], modelCubeUp);
 }
 
 void tema2::RenderScene()
@@ -710,6 +768,8 @@ void tema2::OnMouseMove(int mouseX, int mouseY, int deltaX, int deltaY)
             // variables for setting up the rotation speed.
             camera->RotateFirstPerson_OX(-sensivityOX * deltaY);
             camera->RotateFirstPerson_OY(-sensivityOY * deltaX);
+            camera_up->RotateFirstPerson_OX(-sensivityOX * deltaY);
+            camera_up->RotateFirstPerson_OY(-sensivityOY * deltaX);
         }
 
         if (window->GetSpecialKeyState() & GLFW_MOD_CONTROL)
@@ -720,6 +780,8 @@ void tema2::OnMouseMove(int mouseX, int mouseY, int deltaX, int deltaY)
             // variables for setting up the rotation speed.
             camera->RotateThirdPerson_OX(-sensivityOX * deltaY);
             camera->RotateThirdPerson_OY(-sensivityOY * deltaX);
+            camera_up->RotateThirdPerson_OX(-sensivityOX * deltaY);
+            camera_up->RotateThirdPerson_OY(-sensivityOY * deltaX);
         }
     }
 }

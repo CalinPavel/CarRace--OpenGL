@@ -55,6 +55,9 @@ namespace m1
         glm::mat4 modelMatrix , modelX , modelCameraUp;
         glm::mat4 modelGrassUp , modelRoadUp , modelCubeUp , modelTreeUp;
 
+        glm::mat4 modelObstacle1,modelObstacle2;
+
+
         float translateX, translateY, translateZ;
         float cameraX, cameraY, cameraZ;
 
@@ -76,6 +79,10 @@ namespace m1
 
         float fov = 3.14f/4;
         float left = 0.1f, right = 80, bottom = 0.1f, top = 80, zNear = 0.1f, zFar = 300;
+        float i=0;
+        float count_x = 0;
+        float count_y = 0;
+        float keeptime=0;
 
         // vector<VertexFormat> to_draw;
 
