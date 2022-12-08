@@ -2,6 +2,9 @@
 
 #include "components/simple_scene.h"
 #include "lab_m1/tema2/camera.h"
+#include <vector>
+#include <string>
+#include <iostream>
 
 namespace m1
 {
@@ -30,6 +33,8 @@ namespace m1
         void FrameEnd() override;
 
         void RenderMesh(Mesh *mesh, Shader *shader, const glm::mat4 &modelMatrix) override;
+        void RenderMeshUp(Mesh *mesh, Shader *shader, const glm::mat4 &modelMatrix);
+
 
         void OnInputUpdate(float deltaTime, int mods) override;
         void OnKeyPress(int key, int mods) override;
@@ -47,7 +52,9 @@ namespace m1
 
 
     protected:
-        glm::mat4 modelMatrix , modelX;
+        glm::mat4 modelMatrix , modelX , modelCameraUp;
+        glm::mat4 modelGrassUp , modelRoadUp , modelCubeUp , modelTreeUp;
+
         float translateX, translateY, translateZ;
         float cameraX, cameraY, cameraZ;
 
@@ -55,17 +62,22 @@ namespace m1
         float angularStepOX, angularStepOY, angularStepOZ;
         GLenum polygonMode;
         ViewportArea miniViewportArea;
+        
 
-
-        glm::mat4 modelTree1,modelTree2,modelTree3,modelTree4,modelTree5,modelTree6,modelTree7,modelTree8,modelTree9,modelTree10,modelTree11,modelTree12;
-
+        // glm::mat4 modelTree1,modelTree2,modelTree3,modelTree4,modelTree5,modelTree6,modelTree7,modelTree8,modelTree9,modelTree10,modelTree11,modelTree12;
 
     protected:
         implemented::Camera *camera;
+        implemented::Camera *camera_up;
         glm::mat4 projectionMatrix;
+        glm::mat4 projectionMatrixUp;
+
         bool renderCameraTarget;
 
-        float fov = 3.14f / 4;
-        float left = 0.1f, right = 5, bottom = 0.1f, top = 5, zNear = 0.1f, zFar = 300;
+        float fov = 3.14f/4;
+        float left = 0.1f, right = 80, bottom = 0.1f, top = 80, zNear = 0.1f, zFar = 300;
+
+        // vector<VertexFormat> to_draw;
+
     };
 }

@@ -13,6 +13,7 @@ using namespace m1;
  *  and the order in which they are called, see `world.cpp`.
  */
 
+
 tema2::tema2()
 {
 }
@@ -21,28 +22,52 @@ tema2::~tema2()
 {
 }
 
+    vector<VertexFormat> to_draw_trees;
+
 void tema2::Init()
 {
-    renderCameraTarget = false;
+    // renderCameraTarget = false;
 
     polygonMode = GL_FILL;
 
     camera = new implemented::Camera();
+    camera_up = new implemented::Camera();
 
     cameraX = 0;
     cameraY = 1;
     cameraZ = 5;
     camera->Set(glm::vec3(cameraX, cameraY, cameraZ), glm::vec3(0, 1, 0), glm::vec3(0, 1, 0));
+    camera_up->Set(glm::vec3(camera->GetTargetPosition()[0]+1, camera->GetTargetPosition()[1]+130 ,camera->GetTargetPosition()[2] ), glm::vec3(camera->GetTargetPosition()), glm::vec3(0, 1, 0));
 
-    // camera->TranslateUpward(-0.5f);
     camera->RotateThirdPerson_OX(-0.5f);
     camera->TranslateUpward(-0.6f);
+    // camera->TranslateUpward(60);
+    // camera->RotateThirdPerson_OX(-0.5f);
+    // camera->RotateThirdPerson_OY( -0.7853981634f);
+
+    // camera->TranslateUpward(-0.6f);
+    // projectionMatrix = glm::ortho(fov, window->props.aspectRatio, zNear, zFar);
+    projectionMatrix = glm::perspective(fov, window->props.aspectRatio, zNear, zFar);
+
+
+
+    // camera_up->MoveForward(3.6f);
+    // camera_up->TranslateUpward(50);
+    // camera_up->RotateThirdPerson_OX(1.57f);
+    // camera_up->RotateThirdPerson_OX(-0.5f);
+    // camera_up->RotateThirdPerson_OY( -0.7853981634f);
+
+    // projectionMatrixUp = glm::ortho(left, right, bottom, top, zNear, zFar);
+    projectionMatrixUp = glm::ortho(left, right, bottom, top, zNear, zFar);
+    
+
 
     // camera->TranslateUpward(0.5);
     float cameraSpeed = 2.1f;
     camera->TranslateUpward(-cameraSpeed * 0.5f);
 
     camera->RotateFirstPerson_OX(0.001f * 200);
+
 
     // Initialize tx, ty and tz (the translation steps)
     translateX = 0;
@@ -68,7 +93,7 @@ void tema2::Init()
     // TODO(student): After you implement the changing of the projection
     // parameters, remove hardcodings of these parameters
     // fov=RADIANS(60);
-    projectionMatrix = glm::perspective(fov, window->props.aspectRatio, 0.01f, 300.0f);
+    // projectionMatrix = glm::perspective(fov, window->props.aspectRatio, 0.01f, 300.0f);
 
     // // camera->RotateThirdPerson_OX(RADIANS(45));
     // // grass
@@ -189,11 +214,10 @@ void tema2::Init()
 
 
 
-
     };
+    vector<VertexFormat> to_draw;
 
     glm::vec3 direction = (glm::vec3(0, 0, 0));
-    vector<VertexFormat> to_draw;
     // glm::vec3 P = (glm::vec3(0, 0, 0));
 
     glm::vec3 UP = (glm::vec3(0, 1, 0));
@@ -217,24 +241,26 @@ void tema2::Init()
 
         R[0] = main_dots[i].position[0] + 3.3f * P[0];
         R[2] = main_dots[i].position[2] + 3.3f * P[2];
-        R[1]=0.02f;
+        R[1]=0.04f;
 
         to_draw.push_back(VertexFormat(R,RoadColor));
 
         A[0] = main_dots[i].position[0] - 3.5f * P[0];
         A[2] = main_dots[i].position[2] - 3.5f * P[2];
-        A[1]=0.02f;
+        A[1]=0.04f;
 
         to_draw.push_back(VertexFormat(A,RoadColor));
+
+        A[0] = main_dots[i].position[0] - 5.6f * P[0];
+        A[2] = main_dots[i].position[2] - 5.6f * P[2];
+        A[1]=0.02f;
+        to_draw_trees.push_back(A);
+
         //    A = main_dots[i] + P;
         // to_draw.push_back(direction);
     }
 
-    // for (int i = 0; i != to_draw.size() - 1; ++i)
-    // {
-    //     cout << to_draw[i].position[0] << " ";
-    //     cout << to_draw[i].position[2] << "\n";
-    // }
+
 
     // for (int i = 0; i < 100; i++)
     // {
@@ -341,7 +367,6 @@ void tema2::Init()
         7,6,4,
         6,5,4,
 
-
         8,12,13,
         13,8,9,
         13,10,9,
@@ -350,8 +375,8 @@ void tema2::Init()
         10,15,14,
         15,12,11,
         8,12,11,
-
-
+        15,13,12,
+        15,13,14,
 
     };
 
@@ -360,6 +385,12 @@ void tema2::Init()
         meshes["tree_mesh"]->InitFromData(tree, tree_indices);
         Mesh *tree_mesh = CreateMesh("tree_mesh", tree, tree_indices);
     }
+
+    // Sets the resolution of the small viewport
+    glm::ivec2 resolution = window->GetResolution();
+    miniViewportArea = ViewportArea(50, 50, resolution.x / 5.f, resolution.y / 5.f);
+
+
 }
 
 Mesh *tema2::CreateMesh(const char *name, const std::vector<VertexFormat> &vertices, const std::vector<unsigned int> &indices)
@@ -427,11 +458,28 @@ void tema2::Update(float deltaTimeSeconds)
     RenderMesh(meshes["grass"], shaders["VertexColor"], modelX);
     RenderMesh(meshes["road"], shaders["VertexColor"], modelX);
 
+    //     for (int i = 0; i != to_draw.size() - 1; ++i)
+    // {
+    // //     cout << to_draw[i].position[0] << " ";
+    // //     cout << to_draw[i].position[2] << "\n";
+    //     // tree_matrix.push_back(glm::mat4(1));
+    //     tree_matrix[i] *= transform3D::Translate(to_draw_trees[i].position[0], 0, to_draw_trees[i].position[2]);
+    //     // RenderMesh(meshes["tree_mesh"], shaders["VertexColor"], modelTree);
+    // }
 
-    glm::mat4 modelTree = glm::mat4(1);
-    modelTree *= transform3D::Translate(2.5f, 0.5f, -1.5f);
-    RenderMesh(meshes["tree_mesh"], shaders["VertexColor"], modelTree);
+    
 
+    // glm::mat4 modelTree = glm::mat4(1);
+    // modelTree *= transform3D::Translate(to_draw_trees[0].position[0], 0, to_draw_trees[0].position[2]);
+    // RenderMesh(meshes["tree_mesh"], shaders["VertexColor"], modelTree);
+
+    float tree_offset=0;
+
+    for (int i = 0; i != to_draw_trees.size() - 1; ++i){
+        glm::mat4 modelTree = glm::mat4(1);
+        modelTree *= transform3D::Translate(to_draw_trees[i].position[0], 0, to_draw_trees[i].position[2]+tree_offset);
+        RenderMesh(meshes["tree_mesh"], shaders["VertexColor"], modelTree);
+    }
 
 
     // cameraX = modelX[]
@@ -471,11 +519,31 @@ void tema2::Update(float deltaTimeSeconds)
 
     // modelMatrix = glm::scale(modelMatrix, glm::vec3(0.1f));
     RenderMesh(meshes["box"], shaders["VertexNormal"], modelMatrix);
+
+    //Viewport
+    glClear(GL_DEPTH_BUFFER_BIT);
+    glViewport(miniViewportArea.x, miniViewportArea.y, miniViewportArea.width, miniViewportArea.height);
+    glm::mat4 modelGrassUp = glm::mat4(1);
+    RenderMeshUp(meshes["grass"], shaders["VertexColor"], modelGrassUp);
+
+    glm::mat4 modelRoadUp = glm::mat4(1);
+    modelRoadUp *= glm::translate(modelRoadUp, camera_up->GetTargetPosition());
+    // modelRoadUp *= transform3D::Translate(25,25,25);
+    RenderMeshUp(meshes["road"], shaders["VertexColor"], modelRoadUp);
+
+    for (int i = 0; i != to_draw_trees.size() - 1; ++i){
+        glm::mat4 modelTree = glm::mat4(1);
+        modelTree *= transform3D::Translate(to_draw_trees[i].position[0], 0, to_draw_trees[i].position[2]+tree_offset);
+        RenderMeshUp(meshes["tree_mesh"], shaders["VertexColor"], modelTree);
+    }
+    glm::mat4 modelCubeUp = glm::mat4(1);
+    modelCubeUp *= glm::translate(modelCubeUp, camera_up->GetTargetPosition());
+    RenderMeshUp(meshes["box"], shaders["VertexNormal"], modelCubeUp);
 }
 
 void tema2::RenderScene()
 {
-    // modelMatrix = glm::mat4(1);
+    modelMatrix = glm::mat4(1);
     // modelMatrix *= transform3D::Translate(2.5f, 0.5f, -1.5f);
     // modelMatrix *= transform3D::RotateOX(angularStepOX);
     // modelMatrix *= transform3D::RotateOY(angularStepOY);
@@ -502,6 +570,21 @@ void tema2::RenderMesh(Mesh *mesh, Shader *shader, const glm::mat4 &modelMatrix)
     mesh->Render();
 }
 
+
+void tema2::RenderMeshUp(Mesh *mesh, Shader *shader, const glm::mat4 &modelMatrix)
+{
+    if (!mesh || !shader || !shader->program)
+        return;
+
+    // Render an object using the specified shader and the specified position
+    shader->Use();
+    glUniformMatrix4fv(shader->loc_view_matrix, 1, GL_FALSE, glm::value_ptr(camera_up->GetViewMatrix()));
+    glUniformMatrix4fv(shader->loc_projection_matrix, 1, GL_FALSE, glm::value_ptr(projectionMatrixUp));
+    glUniformMatrix4fv(shader->loc_model_matrix, 1, GL_FALSE, glm::value_ptr(modelMatrix));
+
+    mesh->Render();
+}
+
 /*
  *  These are callback functions. To find more about callbacks and
  *  how they behave, see `input_controller.h`.
@@ -511,11 +594,13 @@ void tema2::OnInputUpdate(float deltaTime, int mods)
 {
     // move the camera only if MOUSE_RIGHT button is pressed
 
-    float cameraSpeed = 6.1f;
+    float cameraSpeed = 15.1f;
 
     if (window->KeyHold(GLFW_KEY_W))
     {
         camera->MoveForward(cameraSpeed * deltaTime);
+        camera_up->MoveForward(cameraSpeed * deltaTime);
+
         translateZ -= cameraSpeed * deltaTime;
     }
     float sensivityOX = 0.001f;
@@ -526,6 +611,8 @@ void tema2::OnInputUpdate(float deltaTime, int mods)
         // TODO(student): Translate the camera backward
         // camera->TranslateForward(-cameraSpeed * deltaTime);
         camera->MoveForward(-cameraSpeed * deltaTime);
+        camera_up->MoveForward(-cameraSpeed * deltaTime);
+
         translateZ += cameraSpeed * deltaTime;
     }
 
@@ -533,6 +620,7 @@ void tema2::OnInputUpdate(float deltaTime, int mods)
     {
         // TODO(student): Translate the camera downward
         camera->TranslateUpward(-cameraSpeed * deltaTime);
+        
     }
 
     if (window->KeyHold(GLFW_KEY_E))
@@ -549,13 +637,17 @@ void tema2::OnInputUpdate(float deltaTime, int mods)
 
     if (window->KeyHold(GLFW_KEY_A))
     {
-        angularStepOY += deltaTime;
-        camera->RotateThirdPerson_OY(deltaTime);
+        angularStepOY +=2* deltaTime;
+        camera->RotateThirdPerson_OY(2*deltaTime);
+        camera_up->RotateThirdPerson_OY(2*deltaTime);
+
     }
     if (window->KeyHold(GLFW_KEY_D))
     {
-        angularStepOY -= deltaTime;
-        camera->RotateThirdPerson_OY(-deltaTime);
+        angularStepOY -= 2*deltaTime;
+        camera->RotateThirdPerson_OY(-2*deltaTime);
+        camera_up->RotateThirdPerson_OY(-2*deltaTime);
+
     }
 }
 
