@@ -12,7 +12,7 @@ namespace implemented
         Camera()
         {
             position    = glm::vec3(0, 2, 5);
-            forward     = glm::vec3(0, 0, -1);
+            forward     = glm::vec3(2, 0, -1);
             up          = glm::vec3(0, 1, 0);
             right       = glm::vec3(1, 0, 0);
             distanceToTarget = 6.35f;

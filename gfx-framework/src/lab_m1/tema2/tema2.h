@@ -46,6 +46,8 @@ namespace m1
         void OnWindowResize(int width, int height) override;
 
         void RenderScene();
+        void RenderSceneUp();
+
 
 
 		Mesh* CreateMesh(const char *name, const std::vector<VertexFormat>& vertices, const std::vector<unsigned int>& indices);
@@ -78,11 +80,13 @@ namespace m1
         bool renderCameraTarget;
 
         float fov = 3.14f/4;
-        float left = 0.1f, right = 80, bottom = 0.1f, top = 80, zNear = 0.1f, zFar = 300;
+        float left = -20, right = 10, bottom = -10, top = 10, zNear = 0.1f, zFar = 100;
         float i=0;
         float count_x = 0;
         float count_y = 0;
         float keeptime=0;
+
+          float countX=0,countY=0;
 
         // vector<VertexFormat> to_draw;
 
