@@ -209,8 +209,8 @@ void tema2::Init()
 
         to_draw.push_back(VertexFormat(R,RoadColor));
 
-        R[0] = main_dots[i].position[0] + 1.3f * P[0];
-        R[2] = main_dots[i].position[2] + 1.3f * P[2];
+        R[0] = main_dots[i].position[0] + 0.1f * P[0];
+        R[2] = main_dots[i].position[2] + 0.1f * P[2];
         R[1]=0.04f;
 
         obstacle_1_road.push_back(R);
@@ -235,6 +235,8 @@ void tema2::Init()
 
 
     }
+
+    obstacle_1_road.push_back(obstacle_1_road[0]);
 
     {
        
@@ -357,6 +359,11 @@ void tema2::Init()
     glm::ivec2 resolution = window->GetResolution();
     miniViewportArea = ViewportArea(50, 50, resolution.x / 5.f, resolution.y / 5.f);
 
+       for (i=0 ; i <= obstacle_1_road.size()-1 ; i++){
+                cout << obstacle_1_road[i].position[0] << "  ";
+                cout << obstacle_1_road[i].position[2] << "  ";
+                cout << "\n";
+            }
 
 }
 
@@ -426,7 +433,6 @@ void tema2::Update(float deltaTimeSeconds)
     RenderScene();
 
     //obstacle_1
-    glm::mat4 modelObstacle1 = glm::mat4(1);
 
     // for (int i = 0; i != obstacle_1_road.size() - 1; ++i){
     //     glm::mat4 modelObstacle1 = glm::mat4(1);
@@ -452,67 +458,62 @@ void tema2::Update(float deltaTimeSeconds)
     // if(keeptime > 1 ){
     //     keeptime=0;
   
-    // cout << i << "\n";
-    if(i < obstacle_1_road.size() - 1){
+    // // cout << i << "\n";
+    // if(i < obstacle_1_road.size() - 1){
 
+    //     if(i==0)
+    //     {
+    //         cout << "FIRST";
+    //         // modelObstacle1 *= transform3D::Translate(obstacle_1_road[i].position[0], 0, obstacle_1_road[i].position[2]);
+    //         modelObstacle1[3][0] = obstacle_1_road[i].position[0]; //X
+    //         modelObstacle1[3][2] = obstacle_1_road[i].position[2]; //Z
+    //         i++;
+    //     }
+
+    //     modelObstacle1[3][0] +=  (modelObstacle1[3][0] + obstacle_1_road[i].position[0])/500;
+    //     modelObstacle1[3][2] += (modelObstacle1[3][0] +  obstacle_1_road[i].position[2])/500;
+
+    //     if(modelObstacle1[3][0] > obstacle_1_road[i+1].position[0] && modelObstacle1[3][2] > obstacle_1_road[i+1].position[2] ){
+    //         cout << "Change!";
+    //         i++;
+    //     }
+
+    // }
+    // else
+    // {
+    //     i=0;
+    // }
+    //         RenderMesh(meshes["box"], shaders["VertexColor"], modelObstacle1);
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    if(i <= obstacle_1_road.size() - 1){
+        cout << "I= " << i << "\n";
         if(i==0)
         {
-            modelObstacle1 *= transform3D::Translate(obstacle_1_road[i].position[0], 0, obstacle_1_road[i].position[2]);
-            countX = obstacle_1_road[i].position[0];
-            countY = obstacle_1_road[i].position[2];
-        }
-
-        cout << "CoutX= " << countX << "\n";
-        cout << "To reach= " << obstacle_1_road[i].position[0]  << "\n";
-
-
-
-        if( countX > obstacle_1_road[i].position[0]  - 0.3f || obstacle_1_road[i].position[2] <  countY ){
-        // if( round(countX == round(obstacle_1_road[i].position[0])  &&  round(countY)  == round(obstacle_1_road[i].position[2] )  ){
-        
+            cout << "FIRST";
+            // modelObstacle1 *= transform3D::Translate(obstacle_1_road[i].position[0], 0, obstacle_1_road[i].position[2]);
+            modelObstacle1[3][0] = obstacle_1_road[i].position[0]; //X
+            modelObstacle1[3][2] = obstacle_1_road[i].position[2]; //Z
             i++;
-            cout<<"Start" << "\n";
-            countX = (obstacle_1_road[i].position[0] + obstacle_1_road[i-1].position[0] )/8000 + obstacle_1_road[i-1].position[0] ;
-            countY = (obstacle_1_road[i].position[2] + obstacle_1_road[i-1].position[2] )/8000 + obstacle_1_road[i-1].position[2];
-            modelObstacle1 *= transform3D::Translate(countX, 0, countY);
-
-        }else{
-            // cout<<"Move on";
-
-            //  cout << " BEFORE CoutX= " << countX << "\n";
-            if(obstacle_1_road[i].position[0] > countX ){
-               
-                countX += (obstacle_1_road[i].position[0] + obstacle_1_road[i-1].position[0] )/8000;
-            }else
-            {
-                countX -= (obstacle_1_road[i].position[0] + obstacle_1_road[i-1].position[0] )/8000;
-            }
-            //  cout << " AFTER CoutX= " << countX << "\n";
-
-
-            if(obstacle_1_road[i].position[2] > countY ){
-                countY += (obstacle_1_road[i].position[2] + obstacle_1_road[i-1].position[2] )/8000;
-            }else
-            {
-
-                countY -= (obstacle_1_road[i].position[2] + obstacle_1_road[i-1].position[2] )/8000;
-            }
-            modelObstacle1 *= transform3D::Translate(countX, 0, countY);
         }
 
-        // cout << "From = " << floorf(obstacle_1_road[i-1].position[0]  * 1000) / 100 << "\n";
 
+            modelObstacle1[3][0] +=  ( obstacle_1_road[i].position[0] - obstacle_1_road[i-1].position[0] )/50;
+ 
+
+            modelObstacle1[3][2] += (obstacle_1_road[i].position[2] - obstacle_1_road[i-1].position[2])/50;
+        // cout << modelObstacle1[3][0] << " " << modelObstacle1[3][2] << "\n";
+
+        if(( obstacle_1_road[i].position[0] + 0.04f > modelObstacle1[3][0] &&  modelObstacle1[3][0] > obstacle_1_road[i].position[0] - 0.04f)  ||  (obstacle_1_road[i].position[2] + 0.04f > modelObstacle1[3][2]  && modelObstacle1[3][2] > obstacle_1_road[i].position[2] - 0.04f) ){
+            cout << "CHANGE!" << "\n";
+            i++;
+        }
 
     }
     else
     {
-        // cout << "new I" << "\n";
         i=0;
     }
-    // }
-            RenderMesh(meshes["box"], shaders["VertexColor"], modelObstacle1);
-
-    
+            RenderMesh(meshes["sphere"], shaders["VertexColor"], modelObstacle1);
 
     // cout << deltaTimeSeconds << "\n";
 
@@ -604,7 +605,7 @@ void tema2::RenderSceneUp()
 
 void tema2::FrameEnd()
 {
-    // DrawCoordinateSystem(camera->GetViewMatrix(), projectionMatrix);
+    DrawCoordinateSystem(camera->GetViewMatrix(), projectionMatrix);
 }
 
 void tema2::RenderMesh(Mesh *mesh, Shader *shader, const glm::mat4 &modelMatrix)

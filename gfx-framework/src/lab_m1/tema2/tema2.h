@@ -57,7 +57,11 @@ namespace m1
         glm::mat4 modelMatrix , modelX , modelCameraUp;
         glm::mat4 modelGrassUp , modelRoadUp , modelCubeUp , modelTreeUp;
 
-        glm::mat4 modelObstacle1,modelObstacle2;
+        glm::mat4 modelObstacle2 = glm::mat4(1);
+        glm::mat4 modelObstacle1 = glm::mat4(1);
+
+        bool go=1;
+        int k=4;
 
 
         float translateX, translateY, translateZ;
