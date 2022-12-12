@@ -25,6 +25,7 @@ tema2::~tema2()
     vector<VertexFormat> to_draw_trees;
     vector<VertexFormat> obstacle_1_road;
     vector<VertexFormat> obstacle_2_road;
+    vector<VertexFormat> to_draw;
 
 
 
@@ -186,7 +187,6 @@ void tema2::Init()
 
 
     };
-    vector<VertexFormat> to_draw;
 
     glm::vec3 direction = (glm::vec3(0, 0, 0));
     // glm::vec3 P = (glm::vec3(0, 0, 0));
@@ -235,6 +235,14 @@ void tema2::Init()
 
 
     }
+
+    to_draw.push_back(to_draw[0]);
+    to_draw.push_back(to_draw[1]);
+
+    // obstacle_1_road.push_back(obstacle_1_road[0]);
+    // obstacle_1_road.push_back(obstacle_1_road[1]);
+
+
 
     obstacle_1_road.push_back(obstacle_1_road[0]);
 
@@ -359,11 +367,11 @@ void tema2::Init()
     glm::ivec2 resolution = window->GetResolution();
     miniViewportArea = ViewportArea(50, 50, resolution.x / 5.f, resolution.y / 5.f);
 
-       for (i=0 ; i <= obstacle_1_road.size()-1 ; i++){
-                cout << obstacle_1_road[i].position[0] << "  ";
-                cout << obstacle_1_road[i].position[2] << "  ";
-                cout << "\n";
-            }
+    //    for (i=0 ; i <= obstacle_1_road.size()-1 ; i++){
+    //             cout << obstacle_1_road[i].position[0] << "  ";
+    //             cout << obstacle_1_road[i].position[2] << "  ";
+    //             cout << "\n";
+    //         }
 
 }
 
@@ -431,119 +439,16 @@ void tema2::Update(float deltaTimeSeconds)
     glPolygonMode(GL_FRONT_AND_BACK, polygonMode);
  
     RenderScene();
-
-    //obstacle_1
-
-    // for (int i = 0; i != obstacle_1_road.size() - 1; ++i){
-    //     glm::mat4 modelObstacle1 = glm::mat4(1);
-    //     modelObstacle1 *= transform3D::Translate(obstacle_1_road[i].position[0], 0, obstacle_1_road[i].position[2]);
-    //     modelObstacle1 = glm::scale(modelObstacle1, glm::vec3(0.6f));
-    //     RenderMesh(meshes["box"], shaders["VertexColor"], modelObstacle1);
-    // }
-    
-
-    // if(i <= obstacle_1_road.size() - 1){
-    //     glm::mat4 modelObstacle1 = glm::mat4(1);
-    //     modelObstacle1 *= transform3D::Translate(obstacle_1_road[i].position[0], 0, obstacle_1_road[i].position[2]);
-    //     modelObstacle1 = glm::scale(modelObstacle1, glm::vec3(0.6f));
-    //     RenderMesh(meshes["box"], shaders["VertexColor"], modelObstacle1);
-    //     if(i == obstacle_1_road.size() - 1){
-    //         i=0;
-    //     }
-    // }
-
-    // cout<< i << "\n";
-    
-    // keeptime += deltaTimeSeconds;
-    // if(keeptime > 1 ){
-    //     keeptime=0;
-  
-    // // cout << i << "\n";
-    // if(i < obstacle_1_road.size() - 1){
-
-    //     if(i==0)
-    //     {
-    //         cout << "FIRST";
-    //         // modelObstacle1 *= transform3D::Translate(obstacle_1_road[i].position[0], 0, obstacle_1_road[i].position[2]);
-    //         modelObstacle1[3][0] = obstacle_1_road[i].position[0]; //X
-    //         modelObstacle1[3][2] = obstacle_1_road[i].position[2]; //Z
-    //         i++;
-    //     }
-
-    //     modelObstacle1[3][0] +=  (modelObstacle1[3][0] + obstacle_1_road[i].position[0])/500;
-    //     modelObstacle1[3][2] += (modelObstacle1[3][0] +  obstacle_1_road[i].position[2])/500;
-
-    //     if(modelObstacle1[3][0] > obstacle_1_road[i+1].position[0] && modelObstacle1[3][2] > obstacle_1_road[i+1].position[2] ){
-    //         cout << "Change!";
-    //         i++;
-    //     }
-
-    // }
-    // else
-    // {
-    //     i=0;
-    // }
-    //         RenderMesh(meshes["box"], shaders["VertexColor"], modelObstacle1);
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    if(i <= obstacle_1_road.size() - 1){
-        cout << "I= " << i << "\n";
-        if(i==0)
-        {
-            cout << "FIRST";
-            // modelObstacle1 *= transform3D::Translate(obstacle_1_road[i].position[0], 0, obstacle_1_road[i].position[2]);
-            modelObstacle1[3][0] = obstacle_1_road[i].position[0]; //X
-            modelObstacle1[3][2] = obstacle_1_road[i].position[2]; //Z
-            i++;
-        }
-
-
-            modelObstacle1[3][0] +=  ( obstacle_1_road[i].position[0] - obstacle_1_road[i-1].position[0] )/50;
- 
-
-            modelObstacle1[3][2] += (obstacle_1_road[i].position[2] - obstacle_1_road[i-1].position[2])/50;
-        // cout << modelObstacle1[3][0] << " " << modelObstacle1[3][2] << "\n";
-
-        if(( obstacle_1_road[i].position[0] + 0.04f > modelObstacle1[3][0] &&  modelObstacle1[3][0] > obstacle_1_road[i].position[0] - 0.04f)  ||  (obstacle_1_road[i].position[2] + 0.04f > modelObstacle1[3][2]  && modelObstacle1[3][2] > obstacle_1_road[i].position[2] - 0.04f) ){
-            cout << "CHANGE!" << "\n";
-            i++;
-        }
-
-    }
-    else
-    {
-        i=0;
-    }
-            RenderMesh(meshes["sphere"], shaders["VertexColor"], modelObstacle1);
-
-    // cout << deltaTimeSeconds << "\n";
-
-    // camera_up=camera;
-
-    // camera->Set(glm::vec3(camera->GetTargetPosition()), glm::vec3(camera->GetTargetPosition()), glm::vec3(0, 1, 0));
-    // projectionMatrix *= glm::translate(projectionMatrix, camera_up->GetTargetPosition());
-    // projectionMatrix = glm::ortho(left, right, bottom, top, zNear, zFar);
-    // left  = camera->GetTargetPosition()[0];
-    // right  = camera->GetTargetPosition()[2];
-
     camera_up->Set(glm::vec3(camera->GetTargetPosition()), glm::vec3(0, 1, 0), glm::vec3(0, 1, 0));
 
     projectionMatrixUp = glm::ortho(left, right, bottom, top, zNear, zFar);
 
-    // camera_up->TranslateUpward(-2.1f * 0.5f);
 
     camera_up->RotateThirdPerson_OX(-1.57f);
 
     glClear(GL_DEPTH_BUFFER_BIT);
     glViewport(miniViewportArea.x, miniViewportArea.y, miniViewportArea.width, miniViewportArea.height);
-    // cout << camera->GetTargetPosition()[1];
     RenderSceneUp();
-
-    // projectionMatrix = glm::perspective(fov, window->props.aspectRatio, zNear, zFar);
-
-    // camera->Set(glm::vec3(cameraX, cameraY, cameraZ), glm::vec3(0, 1, 0), glm::vec3(0, 1, 0));
-    // camera = camera_up;
-
-
 }
 
 void tema2::RenderScene()
@@ -571,6 +476,35 @@ void tema2::RenderScene()
 
     // modelMatrix = glm::scale(modelMatrix, glm::vec3(0.1f));
     RenderMesh(meshes["box"], shaders["VertexNormal"], modelMatrix);
+
+
+        if(i <= obstacle_1_road.size() - 1){
+        // cout << "I= " << i << "\n";
+        if(i==0)
+        {
+            // cout << "FIRST";
+            modelObstacle1[3][0] = obstacle_1_road[i].position[0]; //X
+            modelObstacle1[3][2] = obstacle_1_road[i].position[2]; //Z
+            i++;
+        }
+
+
+            modelObstacle1[3][0] +=  ( obstacle_1_road[i].position[0] - obstacle_1_road[i-1].position[0] )/50;
+ 
+
+            modelObstacle1[3][2] += (obstacle_1_road[i].position[2] - obstacle_1_road[i-1].position[2])/50;
+        if(( obstacle_1_road[i].position[0] + 0.04f > modelObstacle1[3][0] &&  modelObstacle1[3][0] > obstacle_1_road[i].position[0] - 0.04f)  ||  (obstacle_1_road[i].position[2] + 0.04f > modelObstacle1[3][2]  && modelObstacle1[3][2] > obstacle_1_road[i].position[2] - 0.04f) ){
+            // cout << "CHANGE!" << "\n";
+            i++;
+        }
+
+    }
+    else
+    {
+        i=0;
+    }
+            RenderMesh(meshes["sphere"], shaders["VertexColor"], modelObstacle1);
+
 }
 
 
@@ -601,6 +535,33 @@ void tema2::RenderSceneUp()
 
     // modelMatrix = glm::scale(modelMatrix, glm::vec3(0.1f));
     RenderMeshUp(meshes["box"], shaders["VertexNormal"], modelMatrix);
+
+        if(i <= obstacle_1_road.size() - 1){
+        // cout << "I= " << i << "\n";
+        if(i==0)
+        {
+            // cout << "FIRST";
+            modelObstacle1[3][0] = obstacle_1_road[i].position[0]; //X
+            modelObstacle1[3][2] = obstacle_1_road[i].position[2]; //Z
+            i++;
+        }
+
+
+            modelObstacle1[3][0] +=  ( obstacle_1_road[i].position[0] - obstacle_1_road[i-1].position[0] )/50;
+ 
+
+            modelObstacle1[3][2] += (obstacle_1_road[i].position[2] - obstacle_1_road[i-1].position[2])/50;
+        if(( obstacle_1_road[i].position[0] + 0.04f > modelObstacle1[3][0] &&  modelObstacle1[3][0] > obstacle_1_road[i].position[0] - 0.04f)  ||  (obstacle_1_road[i].position[2] + 0.04f > modelObstacle1[3][2]  && modelObstacle1[3][2] > obstacle_1_road[i].position[2] - 0.04f) ){
+            // cout << "CHANGE!" << "\n";
+            i++;
+        }
+
+    }
+    else
+    {
+        i=0;
+    }
+            RenderMeshUp(meshes["sphere"], shaders["VertexColor"], modelObstacle1);
 }
 
 void tema2::FrameEnd()
@@ -642,64 +603,104 @@ void tema2::RenderMeshUp(Mesh *mesh, Shader *shader, const glm::mat4 &modelMatri
  *  how they behave, see `input_controller.h`.
  */
 
+float triangle_area(float Ax , float Ay , float Bx , float By ,float Cx , float Cy){
+      float ABx , ABy , ACx , ACy;
+      ABx = Bx - Ax;
+      ABy = By - Ay;
+      ACx = Cx - Ax;
+      ACy = Cy - Ay;
+      float cross;
+      cross = ABx*ACy - ABy*ACx;
+      return abs(cross/2);
+}
+
 void tema2::OnInputUpdate(float deltaTime, int mods)
 {
-    // move the camera only if MOUSE_RIGHT button is pressed
-
     float cameraSpeed = 15.1f;
+
+   
 
     if (window->KeyHold(GLFW_KEY_W))
     {
         camera->MoveForward(cameraSpeed * deltaTime);
-        // camera_up->MoveForward(cameraSpeed * deltaTime);
-
         translateZ -= cameraSpeed * deltaTime;
+
+        for(int i=0 ; i<= to_draw.size()-3;i++){
+
+           float base = triangle_area(to_draw[i].position[0] , to_draw[i].position[2] , to_draw[i+1].position[0] , to_draw[i+1].position[2] , to_draw[i+2].position[0] , to_draw[i+2].position[2] ) ;
+
+           float R1PA1 = triangle_area(to_draw[i].position[0] , to_draw[i].position[2] , camera->GetTargetPosition()[0] , camera->GetTargetPosition()[2] , to_draw[i+2].position[0] , to_draw[i+2].position[2] );
+           float R2PA1 = triangle_area(to_draw[i].position[0] , to_draw[i].position[2] , to_draw[i+1].position[0] , to_draw[i+1].position[2] , camera->GetTargetPosition()[0] , camera->GetTargetPosition()[2] );
+           float R1PR2 = triangle_area(camera->GetTargetPosition()[0] , camera->GetTargetPosition()[2] , to_draw[i+1].position[0] , to_draw[i+1].position[2] , to_draw[i+2].position[0] , to_draw[i+2].position[2] );
+
+        float sum = R1PA1 + R2PA1 +R1PR2;
+           if ( round(base) == round(sum) ){ 
+              out = 0 ;
+              break;
+           }else
+           {
+            out=1;
+           }
+        }
+
+        if(out == 1){
+            camera->MoveForward(-cameraSpeed * deltaTime);
+            translateZ -= cameraSpeed * deltaTime;
+        }
     }
     float sensivityOX = 0.001f;
     float sensivityOY = 0.001f;
 
     if (window->KeyHold(GLFW_KEY_S))
     {
-        // TODO(student): Translate the camera backward
-        // camera->TranslateForward(-cameraSpeed * deltaTime);
+      
         camera->MoveForward(-cameraSpeed * deltaTime);
-        // camera_up->MoveForward(-cameraSpeed * deltaTime);
-
         translateZ += cameraSpeed * deltaTime;
+
+        for(int i=0 ; i<= to_draw.size()-3;i++){
+
+           float base = triangle_area(to_draw[i].position[0] , to_draw[i].position[2] , to_draw[i+1].position[0] , to_draw[i+1].position[2] , to_draw[i+2].position[0] , to_draw[i+2].position[2] ) ;
+
+           float R1PA1 = triangle_area(to_draw[i].position[0] , to_draw[i].position[2] , camera->GetTargetPosition()[0] , camera->GetTargetPosition()[2] , to_draw[i+2].position[0] , to_draw[i+2].position[2] );
+           float R2PA1 = triangle_area(to_draw[i].position[0] , to_draw[i].position[2] , to_draw[i+1].position[0] , to_draw[i+1].position[2] , camera->GetTargetPosition()[0] , camera->GetTargetPosition()[2] );
+           float R1PR2 = triangle_area(camera->GetTargetPosition()[0] , camera->GetTargetPosition()[2] , to_draw[i+1].position[0] , to_draw[i+1].position[2] , to_draw[i+2].position[0] , to_draw[i+2].position[2] );
+  
+        float sum = R1PA1 + R2PA1 +R1PR2;
+           if ( round(base) == round(sum) ){ 
+              out = 0 ;
+              break;
+           }else
+           {
+            out=1;
+           }
+        }
+
+          if(out == 1){
+        camera->MoveForward(cameraSpeed * deltaTime);
+        translateZ += cameraSpeed * deltaTime;
+        }
+
     }
 
-    if (window->KeyHold(GLFW_KEY_Q))
-    {
-        // TODO(student): Translate the camera downward
-        camera->TranslateUpward(-cameraSpeed * deltaTime);
-        
-    }
+    // if (window->KeyHold(GLFW_KEY_Q))
+    // {
+    //     camera->TranslateUpward(-cameraSpeed * deltaTime);
+    // }
 
-    if (window->KeyHold(GLFW_KEY_E))
-    {
-        // TODO(student): Translate the camera upward
-        camera->TranslateUpward(cameraSpeed * deltaTime);
-    }
-    ////////////////////////////////////////////////////
-
-    // TODO(student): Change projection parameters. Declare any extra
-    // variables you might need in the class header. Inspect this file
-    // for any hardcoded projection arguments (can you find any?) and
-    // replace them with those extra variables.
+    // if (window->KeyHold(GLFW_KEY_E))
+    // {
+    //     camera->TranslateUpward(cameraSpeed * deltaTime);
+    // }
 
     if (window->KeyHold(GLFW_KEY_A))
     {
         angularStepOY +=2* deltaTime;
         camera->RotateThirdPerson_OY(2*deltaTime);
-        // camera_up->RotateThirdPerson_OY(2*deltaTime);
-
     }
     if (window->KeyHold(GLFW_KEY_D))
     {
         angularStepOY -= 2*deltaTime;
         camera->RotateThirdPerson_OY(-2*deltaTime);
-        // camera_up->RotateThirdPerson_OY(-2*deltaTime);
-
     }
 }
 

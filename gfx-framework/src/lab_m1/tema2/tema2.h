@@ -66,6 +66,7 @@ namespace m1
 
         float translateX, translateY, translateZ;
         float cameraX, cameraY, cameraZ;
+        bool out=1;
 
         float scaleX, scaleY, scaleZ;
         float angularStepOX, angularStepOY, angularStepOZ;
