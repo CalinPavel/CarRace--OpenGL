@@ -203,8 +203,8 @@ void tema2::Init()
 
         glm::vec3 P = glm::normalize(glm::cross(direction, UP));
 
-        R[0] = main_dots[i].position[0] + 3.3f * P[0];
-        R[2] = main_dots[i].position[2] + 3.3f * P[2];
+        R[0] = main_dots[i].position[0] + 4.3f * P[0];
+        R[2] = main_dots[i].position[2] + 4.3f * P[2];
         R[1]=0.04f;
 
         to_draw.push_back(VertexFormat(R,RoadColor));
@@ -215,14 +215,14 @@ void tema2::Init()
 
         obstacle_1_road.push_back(R);
 
-        A[0] = main_dots[i].position[0] - 3.5f * P[0];
-        A[2] = main_dots[i].position[2] - 3.5f * P[2];
+        A[0] = main_dots[i].position[0] - 4.5f * P[0];
+        A[2] = main_dots[i].position[2] - 4.5f * P[2];
         A[1]=0.04f;
 
         to_draw.push_back(VertexFormat(A,RoadColor));
 
-        A[0] = main_dots[i].position[0] - 5.6f * P[0];
-        A[2] = main_dots[i].position[2] - 5.6f * P[2];
+        A[0] = main_dots[i].position[0] - 7.7f * P[0];
+        A[2] = main_dots[i].position[2] - 7.7f * P[2];
         A[1]=0.02f;
         to_draw_trees.push_back(A);
 
@@ -505,14 +505,43 @@ void tema2::RenderScene()
     }
             RenderMesh(meshes["sphere"], shaders["VertexColor"], modelObstacle1);
 
+
+
+
+        if(j <= obstacle_2_road.size() - 1){
+        // cout << "I= " << i << "\n";
+        if(j==0)
+        {
+            // cout << "FIRST";
+            modelObstacle2[3][0] = obstacle_2_road[j].position[0]; //X
+            modelObstacle2[3][2] = obstacle_2_road[j].position[2]; //Z
+            j++;
+        }
+
+
+            modelObstacle2[3][0] +=  ( obstacle_2_road[j].position[0] - obstacle_2_road[j-1].position[0] )/50;
+ 
+
+            modelObstacle2[3][2] += (obstacle_2_road[j].position[2] - obstacle_2_road[j-1].position[2])/50;
+
+        if(( obstacle_2_road[j].position[0] + 0.04f > modelObstacle2[3][0] &&  modelObstacle2[3][0] > obstacle_2_road[j].position[0] - 0.04f)  ||  (obstacle_2_road[j].position[2] + 0.04f > modelObstacle2[3][2]  && modelObstacle2[3][2] > obstacle_2_road[j].position[2] - 0.04f) ){
+            // cout << "CHANGE!" << "\n";
+            j++;
+        }
+
+    }
+    else
+    {
+        j=0;
+    }
+            RenderMesh(meshes["sphere"], shaders["VertexColor"], modelObstacle2);
+
 }
 
 
 
 void tema2::RenderSceneUp()
 {
-        // RenderMesh(meshes["tetrahedron1"], shaders["VertexColor"], modelX);
-        // cout<<"here"<<"\n";
     glm::mat4 modelX = glm::mat4(1);
     RenderMeshUp(meshes["grass"], shaders["VertexColor"], modelX);
     RenderMeshUp(meshes["road"], shaders["VertexColor"], modelX);
@@ -526,21 +555,15 @@ void tema2::RenderSceneUp()
     }
 
 
-    
-    // Render the camera target. This is useful for understanding where
-    // the rotation point is, when moving in third-person camera mode.
     glm::mat4 modelMatrix = glm::mat4(1);
     modelMatrix = glm::translate(modelMatrix, camera->GetTargetPosition());
     modelMatrix *= transform3D::RotateOY(angularStepOY);
 
-    // modelMatrix = glm::scale(modelMatrix, glm::vec3(0.1f));
     RenderMeshUp(meshes["box"], shaders["VertexNormal"], modelMatrix);
 
         if(i <= obstacle_1_road.size() - 1){
-        // cout << "I= " << i << "\n";
         if(i==0)
         {
-            // cout << "FIRST";
             modelObstacle1[3][0] = obstacle_1_road[i].position[0]; //X
             modelObstacle1[3][2] = obstacle_1_road[i].position[2]; //Z
             i++;
@@ -552,7 +575,6 @@ void tema2::RenderSceneUp()
 
             modelObstacle1[3][2] += (obstacle_1_road[i].position[2] - obstacle_1_road[i-1].position[2])/50;
         if(( obstacle_1_road[i].position[0] + 0.04f > modelObstacle1[3][0] &&  modelObstacle1[3][0] > obstacle_1_road[i].position[0] - 0.04f)  ||  (obstacle_1_road[i].position[2] + 0.04f > modelObstacle1[3][2]  && modelObstacle1[3][2] > obstacle_1_road[i].position[2] - 0.04f) ){
-            // cout << "CHANGE!" << "\n";
             i++;
         }
 

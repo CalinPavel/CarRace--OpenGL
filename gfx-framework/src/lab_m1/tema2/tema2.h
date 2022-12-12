@@ -86,7 +86,7 @@ namespace m1
 
         float fov = 3.14f/4;
         float left = -20, right = 10, bottom = -10, top = 10, zNear = 0.1f, zFar = 100;
-        float i=0;
+        float i=0 , j=0;
         float count_x = 0;
         float count_y = 0;
         float keeptime=0;
